@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<title>FileInfo — Felhasználói útmutató</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1d1d1f; --muted: #6e6e73;
+    --accent: #0071e3; --accent-soft: #eaf3fe;
+    --card: #f5f5f7; --border: #d2d2d7; --code-bg: #f0f0f2;
+    --sidebar-bg: #f5f5f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1e; --fg: #f5f5f7; --muted: #a1a1a6;
+      --accent: #409cff; --accent-soft: #16324e;
+      --card: #2a2a2c; --border: #424245; --code-bg: #2d2d2f;
+      --sidebar-bg: #252527;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.65 -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+  .layout { display: flex; min-height: 100vh; }
+
+  nav {
+    width: 240px; flex-shrink: 0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 24px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  nav h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+           color: var(--muted); margin: 0 12px 10px; }
+  nav a {
+    display: block; padding: 6px 12px; border-radius: 8px;
+    color: var(--fg); text-decoration: none; font-size: 14px;
+  }
+  nav a:hover { background: var(--accent-soft); color: var(--accent); }
+  nav a.sub { padding-left: 26px; font-size: 13px; color: var(--muted); }
+  nav a.sub:hover { color: var(--accent); }
+
+  main { flex: 1; padding: 36px 48px 80px; max-width: 780px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 16px; margin-bottom: 32px; }
+  h2 {
+    font-size: 21px; margin: 44px 0 12px; padding-top: 18px;
+    border-top: 1px solid var(--border); letter-spacing: -.01em;
+  }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  a { color: var(--accent); }
+
+  code {
+    font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--code-bg); border-radius: 5px; padding: 2px 6px;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+  }
+  .card h3 { margin-top: 0; }
+  .tag {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 20px; padding: 2px 10px; margin-right: 6px;
+  }
+  .tip {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 14px 0;
+  }
+  kbd {
+    font: 12px ui-monospace, "SF Mono", Menlo, monospace;
+    border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; background: var(--card);
+  }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav>
+  <h2>Tartalom</h2>
+  <a href="#elso-lepesek">Első lépések</a>
+  <a class="sub" href="#telepites">Telepítés</a>
+  <a class="sub" href="#inditas">Indítás</a>
+  <a href="#felulet">A felület</a>
+  <a class="sub" href="#eszkoztar">Eszköztár</a>
+  <a href="#tipusok">Adatok fájltípusonként</a>
+  <a class="sub" href="#video">🎬 Videó</a>
+  <a class="sub" href="#zene">🎵 Zene / hang</a>
+  <a class="sub" href="#kep">📷 Kép / fénykép</a>
+  <a class="sub" href="#egyeb">📄 Minden más</a>
+  <a href="#segedprogramok">Segédprogramok</a>
+  <a href="#gyik">GYIK / hibaelhárítás</a>
+</nav>
+
+<main>
+<h1>FileInfo</h1>
+<p class="lead">Felhasználói útmutató — kiválasztasz egy fájlt, és azonnal látod
+minden ismert adatát: videóknál a sávokat és kodekeket, zenéknél a címkéket és a
+borítóképet, fényképeknél az EXIF-et, minden másnál a Spotlight metaadatokat.</p>
+
+<h2 id="elso-lepesek">Első lépések</h2>
+
+<h3 id="telepites">Telepítés</h3>
+<pre><code>cd FileInfo
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+brew install ffmpeg exiftool</code></pre>
+
+<h3 id="inditas">Indítás</h3>
+<table>
+  <tr><th>Mód</th><th>Hogyan</th></tr>
+  <tr><td>Finderből</td><td>Dupla kattintás a <code>FileInfo.command</code> fájlra</td></tr>
+  <tr><td>Terminálból</td><td><code>./run.sh</code></td></tr>
+  <tr><td>Parancssori (GUI nélkül)</td><td><code>./run.sh /útvonal/fájl.mkv</code> — a metaadatokat a terminálba írja</td></tr>
+</table>
+
+<div class="tip">💡 <b>Kényelmi tipp</b> — tegyél aliast a <code>~/.zshrc</code>-be:<br>
+<code>alias fileinfo='/eleresi/ut/FileInfo/run.sh'</code></div>
+
+<h2 id="felulet">A felület</h2>
+<p>Az ablak két panelre oszlik, az elválasztó húzható, a pozíciója mentődik:</p>
+<ul>
+  <li><b>Fájlfa (bal)</b> — a saját mappádból indul. A „Mappa választása…"
+      gombbal bárhová átléphetsz; külső meghajtókhoz válaszd a
+      <code>/Volumes</code> mappát.</li>
+  <li><b>Metaadat-panel (jobb)</b> — kijelöléskor automatikusan betöltődik,
+      nem kell gombot nyomni. Fent az előnézeti kép (fotó, videó-képkocka vagy
+      album-borító), alatta a fájlnév, a szűrőmező és a csoportosított adatok.</li>
+  <li><b>Szűrőmező</b> — gépelés közben szűkíti a listát: írd be pl.
+      <code>nyelv</code>, és csak a nyelvi adatok maradnak.</li>
+  <li><b>Jobb klikk egy soron</b> — „Érték másolása" / „Sor másolása".</li>
+  <li><b>Nyelv menü</b> — a felület nyelve váltható (magyar, angol, német,
+      spanyol, francia); a váltás újraindítás után érvényesül.</li>
+  <li><b>Nézet → Rejtett fájlok megjelenítése</b> — a fa alapból a Finderhez
+      hasonlóan elrejti a pont-kezdetű fájlokat; itt kapcsolható be.</li>
+</ul>
+
+<h3 id="eszkoztar">Eszköztár</h3>
+<table>
+  <tr><th>Gomb</th><th>Mit csinál</th></tr>
+  <tr><td>📁 Mappa választása…</td><td>A fájlfa gyökerének átállítása (külső meghajtó: <code>/Volumes</code>)</td></tr>
+  <tr><td>🏠 Saját mappa</td><td>Vissza a saját mappádhoz</td></tr>
+  <tr><td>🔄 Frissítés <kbd>⌘R</kbd></td><td>A kijelölt fájl adatainak újraolvasása</td></tr>
+  <tr><td>📋 Metaadatok másolása</td><td>Az összes szekció szövegként a vágólapra</td></tr>
+  <tr><td>🔍 Megjelenítés Finderben</td><td>A kijelölt fájl megnyitása a Finderben</td></tr>
+</table>
+
+<h2 id="tipusok">Milyen adatokat mutat fájltípusonként</h2>
+
+<div class="card" id="video">
+<h3>🎬 Videó <span class="tag">mp4</span><span class="tag">mkv</span><span class="tag">avi</span><span class="tag">mov</span><span class="tag">webm</span></h3>
+<p>Minden sávról külön szekció készül: kodek, nyelv (magyarul kiírva),
+csatorna-elrendezés (pl. 5.1), bitráta, HDR/színtér-adatok,
+kényszerített/alapértelmezett jelölők, fejezetek.</p>
+<p>Valós példa egy MKV fájlról:</p>
+<pre><code>Konténer         Matroska / WebM · 0:05 · 230 kb/s · 4 sáv
+Videó sáv #0     H.264/AVC · 1280 × 720 · 16:9 · 25 fps · 8 bit
+Audio sáv #0     AAC (LC) · magyar · mono · 44 100 Hz · alapértelmezett
+Audio sáv #1     AAC (LC) · angol · mono · 44 100 Hz
+Felirat sáv #0   SubRip · magyar</code></pre>
+</div>
+
+<div class="card" id="zene">
+<h3>🎵 Zene / hang <span class="tag">mp3</span><span class="tag">flac</span><span class="tag">m4a</span><span class="tag">ogg</span><span class="tag">wav</span></h3>
+<p>Technikai adatok + <b>Címkék</b> szekció + a beágyazott <b>borítókép</b> az
+előnézeti területen. Ha a fájlban nincs borító, a fájl ikonja látszik.</p>
+<pre><code>Konténer       MP3 · 0:03 · 202 kb/s
+Címkék         Cím: Minta dal · Előadó: Minta Előadó · Album: Minta Album
+               Év: 2024 · Műfaj: Pop
+Audio sáv #0   MP3 · mono · 44 100 Hz · 192 kb/s
+Borítókép      PNG · 300 × 300</code></pre>
+</div>
+
+<div class="card" id="kep">
+<h3>📷 Kép / fénykép <span class="tag">jpg</span><span class="tag">png</span><span class="tag">heic</span><span class="tag">tiff</span><span class="tag">RAW</span></h3>
+<p>Felbontás, színmód, ICC profil — fényképeknél pedig a teljes EXIF:</p>
+<pre><code>Kép      2048 × 1463 · JPEG · RGB · beágyazott ICC profil
+EXIF     Fényképezőgép: iPhone 14 Pro Max
+         Rekesz: f/1.8 · Záridő: 1/1000 s · ISO: 80
+         Gyújtótáv: 6.9 mm (24 mm ekv.) · Program AE
+GPS      -8.439906, 115.281236 + Apple Maps link
+XMP, IPTC, ICC…   minden további beágyazott adat</code></pre>
+<p>A GPS szekció <b>Térkép</b> sora a böngészőbe másolva a készítés helyét
+mutatja az Apple Maps-en.</p>
+</div>
+
+<div class="card" id="egyeb">
+<h3>📄 Minden más <span class="tag">pdf</span><span class="tag">docx</span><span class="tag">app</span><span class="tag">bármi</span></h3>
+<p>Minden fájlhoz jár az <b>Általános</b> szekció (méret, dátumok,
+jogosultságok, tulajdonos) és a <b>Spotlight</b> szekció — amit a macOS
+indexelt. Egy PDF-nél például:</p>
+<pre><code>Number of pages: 62 · Version: 1.4 · Creator: ReportLab
+Content creation date: 2026-04-30 · Security method: None</code></pre>
+<p>A Spotlight-mezők nevei angolul jelennek meg — közvetlenül a rendszer
+kulcsaiból származnak.</p>
+</div>
+
+<h2 id="segedprogramok">Segédprogramok</h2>
+<p>A FileInfo külső eszközökre támaszkodik. A <b>Súgó → Függőségek
+ellenőrzése…</b> menüpont mutatja, mi van meg (✅) és mi hiányzik (❌),
+másolható telepítési paranccsal.</p>
+<table>
+  <tr><th>Eszköz</th><th>Mit ad hozzá</th><th>Ha hiányzik</th><th>Telepítés</th></tr>
+  <tr><td><code>ffprobe / ffmpeg</code></td><td>videó/audio sávok, előnézet, borítókép</td><td>nincs média-adat, se videó-előnézet</td><td><code>brew install ffmpeg</code></td></tr>
+  <tr><td><code>exiftool</code></td><td>teljes EXIF, GPS, XMP, objektív-adatok</td><td>csak alap EXIF</td><td><code>brew install exiftool</code></td></tr>
+  <tr><td><code>mdls</code></td><td>Spotlight metaadatok</td><td>nincs Spotlight szekció</td><td>beépített macOS eszköz</td></tr>
+  <tr><td><code>qlmanage</code></td><td>PDF/dokumentum előnézet</td><td>csak fájlikon</td><td>beépített macOS eszköz</td></tr>
+</table>
+<p>Ha a Homebrew sincs telepítve, a függőség-dialógus annak feltelepítését is
+elmagyarázza — részletek: <a href="https://brew.sh">brew.sh</a>.</p>
+
+<h2 id="gyik">GYIK / hibaelhárítás</h2>
+
+<details open>
+<summary>Miért nem látok EXIF-et egy képnél?</summary>
+<p>Képernyőképek és letöltött/üzenetküldőn kapott képek gyakran nem
+tartalmaznak EXIF-et — a szolgáltatók törlik. Ez nem hiba.</p>
+</details>
+
+<details>
+<summary>Hogyan érem el a pendrive-ot / külső lemezt?</summary>
+<p>📁 Mappa választása… → bal oldalt a Helyek közül a meghajtó, vagy írd be a
+címsorba: <code>/Volumes</code>.</p>
+</details>
+
+<details>
+<summary>A hálózati meghajtón lévő fájl lassan töltődik be</summary>
+<p>A kinyerés a fájl olvasási sebességétől függ. A felület közben nem fagy le,
+és mindig az utoljára kijelölt fájl adatai jelennek meg.</p>
+</details>
+
+<details>
+<summary>Egy fájlnál üres a Spotlight szekció</summary>
+<p>A Spotlight nem indexel minden helyet (ideiglenes mappák, egyes külső
+meghajtók). A többi szekciót ez nem érinti.</p>
+</details>
+
+<details>
+<summary>Furcsa helyen nyílik az ablak / szétesett a panel</summary>
+<p>Az ablak mérete és az elválasztó pozíciója mentődik; húzd a helyére, és a
+következő indításkor már úgy nyílik.</p>
+</details>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>FileInfo — Guide de l'utilisateur</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1d1d1f; --muted: #6e6e73;
+    --accent: #0071e3; --accent-soft: #eaf3fe;
+    --card: #f5f5f7; --border: #d2d2d7; --code-bg: #f0f0f2;
+    --sidebar-bg: #f5f5f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1e1e1e; --fg: #f5f5f7; --muted: #a1a1a6;
+      --accent: #409cff; --accent-soft: #16324e;
+      --card: #2a2a2c; --border: #424245; --code-bg: #2d2d2f;
+      --sidebar-bg: #252527;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--fg);
+    font: 15px/1.65 -apple-system, "SF Pro Text", "Helvetica Neue", sans-serif;
+  }
+  .layout { display: flex; min-height: 100vh; }
+
+  nav {
+    width: 240px; flex-shrink: 0; background: var(--sidebar-bg);
+    border-right: 1px solid var(--border);
+    padding: 24px 12px; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  }
+  nav h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em;
+           color: var(--muted); margin: 0 12px 10px; }
+  nav a {
+    display: block; padding: 6px 12px; border-radius: 8px;
+    color: var(--fg); text-decoration: none; font-size: 14px;
+  }
+  nav a:hover { background: var(--accent-soft); color: var(--accent); }
+  nav a.sub { padding-left: 26px; font-size: 13px; color: var(--muted); }
+  nav a.sub:hover { color: var(--accent); }
+
+  main { flex: 1; padding: 36px 48px 80px; max-width: 780px; }
+  h1 { font-size: 30px; margin: 0 0 6px; letter-spacing: -.02em; }
+  .lead { color: var(--muted); font-size: 16px; margin-bottom: 32px; }
+  h2 {
+    font-size: 21px; margin: 44px 0 12px; padding-top: 18px;
+    border-top: 1px solid var(--border); letter-spacing: -.01em;
+  }
+  h3 { font-size: 16px; margin: 24px 0 8px; }
+  a { color: var(--accent); }
+
+  code {
+    font: 13px/1.5 ui-monospace, "SF Mono", Menlo, monospace;
+    background: var(--code-bg); border-radius: 5px; padding: 2px 6px;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; overflow-x: auto;
+  }
+  pre code { background: none; padding: 0; }
+
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 14px; }
+  th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 13px; }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 20px; margin: 14px 0;
+  }
+  .card h3 { margin-top: 0; }
+  .tag {
+    display: inline-block; font-size: 12px; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent);
+    border-radius: 20px; padding: 2px 10px; margin-right: 6px;
+  }
+  .tip {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    border-radius: 0 10px 10px 0; padding: 10px 16px; margin: 14px 0;
+  }
+  kbd {
+    font: 12px ui-monospace, "SF Mono", Menlo, monospace;
+    border: 1px solid var(--border); border-bottom-width: 2px;
+    border-radius: 5px; padding: 1px 6px; background: var(--card);
+  }
+  details { margin: 8px 0; }
+  summary { cursor: pointer; font-weight: 600; padding: 6px 0; }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<nav>
+  <h2>Sommaire</h2>
+  <a href="#premiers-pas">Premiers pas</a>
+  <a class="sub" href="#installation">Installation</a>
+  <a class="sub" href="#lancement">Lancement</a>
+  <a href="#interface">L'interface</a>
+  <a class="sub" href="#barre">Barre d'outils</a>
+  <a href="#types">Données par type de fichier</a>
+  <a class="sub" href="#video">🎬 Vidéo</a>
+  <a class="sub" href="#audio">🎵 Musique / audio</a>
+  <a class="sub" href="#image">📷 Image / photo</a>
+  <a class="sub" href="#autres">📄 Tout le reste</a>
+  <a href="#outils">Outils auxiliaires</a>
+  <a href="#faq">FAQ / Dépannage</a>
+</nav>
+
+<main>
+<h1>FileInfo</h1>
+<p class="lead">Guide de l'utilisateur — sélectionnez un fichier et voyez
+instantanément tout ce qu'on en sait : pistes et codecs pour les vidéos,
+étiquettes et pochette pour la musique, EXIF pour les photos et métadonnées
+Spotlight pour tout le reste.</p>
+
+<h2 id="premiers-pas">Premiers pas</h2>
+
+<h3 id="installation">Installation</h3>
+<pre><code>cd FileInfo
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+brew install ffmpeg exiftool</code></pre>
+
+<h3 id="lancement">Lancement</h3>
+<table>
+  <tr><th>Mode</th><th>Comment</th></tr>
+  <tr><td>Depuis le Finder</td><td>Double-clic sur <code>FileInfo.command</code></td></tr>
+  <tr><td>Depuis le Terminal</td><td><code>./run.sh</code></td></tr>
+  <tr><td>Ligne de commande (sans GUI)</td><td><code>./run.sh /chemin/du/fichier.mkv</code> — affiche les métadonnées dans le terminal</td></tr>
+</table>
+
+<h2 id="interface">L'interface</h2>
+<p>La fenêtre est divisée en deux panneaux ; le séparateur est déplaçable et
+sa position est mémorisée :</p>
+<ul>
+  <li><b>Arborescence (à gauche)</b> — démarre dans votre dossier personnel.
+      « Choisir un dossier… » permet d'aller n'importe où ; les disques
+      externes sont dans <code>/Volumes</code>.</li>
+  <li><b>Panneau de métadonnées (à droite)</b> — se charge automatiquement à
+      la sélection. En haut l'aperçu (photo, image de la vidéo ou pochette),
+      puis le nom du fichier, le filtre et les données groupées.</li>
+  <li><b>Champ de filtre</b> — réduit la liste au fil de la saisie : tapez
+      p. ex. <code>langue</code> et seules les lignes de langue restent.</li>
+  <li><b>Clic droit sur une ligne</b> — « Copier la valeur » / « Copier la
+      ligne ».</li>
+  <li><b>Menu Langue</b> — change la langue de l'interface (hongrois, anglais,
+      allemand, espagnol, français) ; prend effet après un redémarrage.</li>
+  <li><b>Affichage → Afficher les fichiers cachés</b> — comme le Finder,
+      l'arborescence masque les fichiers cachés par défaut ; activez-les ici.</li>
+</ul>
+
+<h3 id="barre">Barre d'outils</h3>
+<table>
+  <tr><th>Bouton</th><th>Fonction</th></tr>
+  <tr><td>📁 Choisir un dossier…</td><td>Changer la racine de l'arborescence (disques externes : <code>/Volumes</code>)</td></tr>
+  <tr><td>🏠 Dossier personnel</td><td>Retour à votre dossier personnel</td></tr>
+  <tr><td>🔄 Actualiser <kbd>⌘R</kbd></td><td>Relire les métadonnées du fichier sélectionné</td></tr>
+  <tr><td>📋 Copier les métadonnées</td><td>Toutes les sections en texte dans le presse-papiers</td></tr>
+  <tr><td>🔍 Afficher dans le Finder</td><td>Afficher le fichier sélectionné dans le Finder</td></tr>
+</table>
+
+<h2 id="types">Quelles données par type de fichier</h2>
+
+<div class="card" id="video">
+<h3>🎬 Vidéo <span class="tag">mp4</span><span class="tag">mkv</span><span class="tag">avi</span><span class="tag">mov</span><span class="tag">webm</span></h3>
+<p>Chaque piste a sa propre section : codec, langue, disposition des canaux
+(p. ex. 5.1), débit, données HDR/couleur, indicateurs forcée/par défaut,
+chapitres.</p>
+<pre><code>Conteneur         Matroska / WebM · 0:05 · 230 kb/s · 4 pistes
+Piste vidéo #0    H.264/AVC · 1280 × 720 · 16:9 · 25 fps · 8 bits
+Piste audio #0    AAC (LC) · hongrois · mono · 44 100 Hz · par défaut
+Piste audio #1    AAC (LC) · anglais · mono · 44 100 Hz
+Piste de sous-titres #0  SubRip · hongrois</code></pre>
+</div>
+
+<div class="card" id="audio">
+<h3>🎵 Musique / audio <span class="tag">mp3</span><span class="tag">flac</span><span class="tag">m4a</span><span class="tag">ogg</span><span class="tag">wav</span></h3>
+<p>Données techniques + section <b>Étiquettes</b> + la <b>pochette</b>
+intégrée dans l'aperçu. Sans pochette, l'icône du fichier s'affiche.</p>
+<pre><code>Conteneur        MP3 · 0:03 · 202 kb/s
+Étiquettes       Titre : Chanson d'exemple · Artiste : Artiste d'exemple
+                 Album : Album d'exemple · Année : 2024 · Genre : Pop
+Piste audio #0   MP3 · mono · 44 100 Hz · 192 kb/s
+Pochette         PNG · 300 × 300</code></pre>
+</div>
+
+<div class="card" id="image">
+<h3>📷 Image / photo <span class="tag">jpg</span><span class="tag">png</span><span class="tag">heic</span><span class="tag">tiff</span><span class="tag">RAW</span></h3>
+<p>Résolution, mode colorimétrique, profil ICC — et pour les photos, l'EXIF
+complet :</p>
+<pre><code>Image    2048 × 1463 · JPEG · RGB · profil ICC intégré
+EXIF     Appareil : iPhone 14 Pro Max
+         Ouverture : f/1.8 · Obturation : 1/1000 s · ISO : 80
+         Focale : 6.9 mm (équiv. 35 mm : 24 mm) · Programme AE
+GPS      -8.439906, 115.281236 + lien Apple Plans
+XMP, IPTC, ICC…   tous les autres groupes intégrés</code></pre>
+<p>Collez la ligne <b>Carte</b> de la section GPS dans votre navigateur pour
+voir le lieu de prise de vue sur Apple Plans.</p>
+</div>
+
+<div class="card" id="autres">
+<h3>📄 Tout le reste <span class="tag">pdf</span><span class="tag">docx</span><span class="tag">app</span><span class="tag">n'importe</span></h3>
+<p>Chaque fichier reçoit une section <b>Général</b> (taille, dates,
+autorisations, propriétaire) et une section <b>Spotlight</b> — tout ce que
+macOS a indexé. Pour un PDF par exemple :</p>
+<pre><code>Nombre de pages : 62 · Version : 1.4 · Créateur : ReportLab
+Créé : 2026-04-30 · Sécurité : None</code></pre>
+</div>
+
+<h2 id="outils">Outils auxiliaires</h2>
+<p>FileInfo s'appuie sur des outils externes. <b>Aide → Vérifier les
+dépendances…</b> montre ce qui est installé (✅) et ce qui manque (❌), avec
+des commandes d'installation copiables.</p>
+<table>
+  <tr><th>Outil</th><th>Ce qu'il apporte</th><th>S'il manque</th><th>Installation</th></tr>
+  <tr><td><code>ffprobe / ffmpeg</code></td><td>pistes vidéo/audio, aperçus, pochette</td><td>pas de données médias ni d'aperçu vidéo</td><td><code>brew install ffmpeg</code></td></tr>
+  <tr><td><code>exiftool</code></td><td>EXIF complet, GPS, XMP, données d'objectif</td><td>EXIF de base seulement</td><td><code>brew install exiftool</code></td></tr>
+  <tr><td><code>mdls</code></td><td>métadonnées Spotlight</td><td>pas de section Spotlight</td><td>outil intégré à macOS</td></tr>
+  <tr><td><code>qlmanage</code></td><td>aperçus PDF/documents</td><td>icône du fichier seulement</td><td>outil intégré à macOS</td></tr>
+</table>
+<p>Si Homebrew lui-même manque, le dialogue des dépendances explique comment
+l'installer — voir <a href="https://brew.sh">brew.sh</a>.</p>
+
+<h2 id="faq">FAQ / Dépannage</h2>
+
+<details open>
+<summary>Pourquoi ne vois-je pas d'EXIF sur une image ?</summary>
+<p>Les captures d'écran et les images téléchargées ou reçues par messagerie
+ne contiennent généralement pas d'EXIF — les services le suppriment. Ce n'est
+pas un bug.</p>
+</details>
+
+<details>
+<summary>Comment accéder à une clé USB / un disque externe ?</summary>
+<p>📁 Choisir un dossier… → choisissez le disque sous « Emplacements » ou
+saisissez <code>/Volumes</code>.</p>
+</details>
+
+<details>
+<summary>Les fichiers sur un lecteur réseau se chargent lentement</summary>
+<p>La vitesse dépend de la rapidité de lecture du fichier. L'interface ne se
+fige jamais et les données affichées correspondent toujours au dernier fichier
+sélectionné.</p>
+</details>
+
+<details>
+<summary>La section Spotlight est vide pour certains fichiers</summary>
+<p>Spotlight n'indexe pas tous les emplacements (dossiers temporaires,
+certains disques externes). Les autres sections ne sont pas concernées.</p>
+</details>
+
+<details>
+<summary>La fenêtre s'ouvre à un endroit étrange / la disposition semble décalée</summary>
+<p>La taille de la fenêtre et la position du séparateur sont mémorisées ;
+replacez-les et le prochain lancement les restaurera.</p>
+</details>
+
+</main>
+</div>
+</body>
+</html>
