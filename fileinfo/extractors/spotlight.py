@@ -1,4 +1,4 @@
-"""macOS Spotlight metaadatok az mdls paranccsal."""
+"""macOS Spotlight metadata via the mdls command."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from pathlib import Path
 from ..i18n import tr
 from .base import Section, humanize_key, run_tool
 
-# Ezek másik szekcióban már szerepelnek, vagy zaj.
+# These already appear in another section, or are noise.
 _SKIP_PREFIXES = ("kMDItemFS", "kMDItemDisplayName", "kMDItemLogicalSize",
                   "kMDItemPhysicalSize", "kMDItemDocumentIdentifier")
 

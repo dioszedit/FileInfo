@@ -1,4 +1,4 @@
-"""Képfájlok adatai: Pillow alapok + exiftool a teljes EXIF-hez."""
+"""Image file data: Pillow basics + exiftool for the full EXIF."""
 
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ IMAGE_EXTENSIONS = {
     ".cr3", ".nef", ".arw", ".orf", ".rw2", ".raf",
 }
 
-# Kiemelt EXIF címkék: (exiftool tag, angol felirat mint tr()-kulcs, formázó).
-# Az exiftool ember-olvasható módban fut, így a legtöbb érték már formázott.
+# Priority EXIF tags: (exiftool tag, English label as tr() key, formatter).
+# exiftool runs in human-readable mode, so most values are already formatted.
 _EXIF_PRIORITY = [
     ("Model", "Camera", None),
     ("Make", "Make", None),
@@ -38,13 +38,13 @@ _EXIF_PRIORITY = [
     ("ColorSpace", "Color space (EXIF)", None),
 ]
 
-# exiftool csoportok, amelyeket nem érdemes duplán mutatni
+# exiftool groups not worth showing twice
 _SKIP_GROUPS = {"File", "System", "ExifTool", "SourceFile"}
 _SKIP_TAGS = {"ThumbnailImage", "PreviewImage", "ThumbnailOffset", "ThumbnailLength"}
 
 
 def _pillow_section(path: Path) -> Section:
-    """Alapadatok Pillow-val; hibás képnél üres szekciót ad vissza."""
+    """Basic data via Pillow; returns an empty section for a broken image."""
     sec = Section(tr("Image"))
     try:
         from PIL import Image
@@ -54,8 +54,8 @@ def _pillow_section(path: Path) -> Section:
             sec.add(tr("Color mode"), img.mode)
             if "icc_profile" in img.info:
                 sec.add(tr("ICC profile"), tr("yes (embedded)"))
-            # GIF/WebP esetén az n_frames minden képkockán végigléptet —
-            # egy preparált fájl percekre lefoglalna egy worker-szálat.
+            # For GIF/WebP, n_frames iterates over every frame —
+            # a crafted file could tie up a worker thread for minutes.
             if img.format not in ("GIF", "WEBP"):
                 frames = getattr(img, "n_frames", 1)
                 if frames > 1:
@@ -69,7 +69,7 @@ def _pillow_section(path: Path) -> Section:
 
 
 def _exiftool_sections(path: Path) -> list[Section]:
-    # -c "%+.6f": GPS koordináták előjeles decimális fokban (térkép-linkhez)
+    # -c "%+.6f": GPS coordinates in signed decimal degrees (for the map link)
     output = run_tool(["exiftool", "-json", "-G", "-c", "%+.6f", "--", str(path)], timeout=20)
     if output is None:
         return []
@@ -78,7 +78,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
     except (json.JSONDecodeError, IndexError):
         return []
 
-    # "Group:Tag" -> érték szétbontása csoportokra
+    # Split "Group:Tag" -> value entries into groups
     grouped: dict[str, dict[str, object]] = {}
     for full_key, value in data.items():
         if ":" in full_key:
@@ -91,7 +91,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
 
     sections: list[Section] = []
 
-    # EXIF szekció a kiemelt címkékkel
+    # EXIF section with the priority tags
     exif_tags = grouped.pop("EXIF", {})
     maker = grouped.pop("MakerNotes", {})
     if exif_tags or maker:
@@ -112,7 +112,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
                 other.add(humanize_key(tag), merged[tag])
             sections.append(other)
 
-    # GPS szekció Apple Maps linkkel
+    # GPS section with an Apple Maps link
     composite = grouped.pop("Composite", {})
     lat, lon = composite.get("GPSLatitude"), composite.get("GPSLongitude")
     if lat is not None and lon is not None:
@@ -127,7 +127,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
             gps.add(tr("Longitude"), lon)
         alt = composite.get("GPSAltitude")
         if alt is not None:
-            # Az exiftool pl. "130.5 m Above Sea Level" formát ad vissza.
+            # exiftool returns e.g. "130.5 m Above Sea Level".
             match = re.match(r"([-+]?\d+(?:\.\d+)?)", str(alt))
             if match:
                 value = float(match.group(1))
@@ -140,7 +140,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
             gps.add(tr("Map"), f"https://maps.apple.com/?ll={lat_f:.6f},{lon_f:.6f}")
         sections.append(gps)
 
-    # Maradék csoportok (ICC_Profile, XMP, IPTC, PNG...)
+    # Remaining groups (ICC_Profile, XMP, IPTC, PNG...)
     for group in sorted(grouped):
         tags = grouped[group]
         if not tags:
@@ -154,7 +154,7 @@ def _exiftool_sections(path: Path) -> list[Section]:
 
 
 def _pillow_exif_fallback(path: Path) -> list[Section]:
-    """Egyszerű EXIF Pillow-ból, ha nincs exiftool."""
+    """Simple EXIF from Pillow when exiftool is unavailable."""
     try:
         from PIL import Image
         from PIL.ExifTags import TAGS

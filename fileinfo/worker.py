@@ -1,4 +1,4 @@
-"""Háttérfeladatok QThreadPool-lal, elavulás-védelemmel."""
+"""Background tasks via QThreadPool, with staleness protection."""
 
 from __future__ import annotations
 

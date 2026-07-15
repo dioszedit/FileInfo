@@ -1,4 +1,4 @@
-"""Belépési pont: argumentum nélkül GUI, fájl-argumentummal terminál-kimenet."""
+"""Entry point: GUI without arguments, terminal output with a file argument."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ def _print_metadata(target: Path) -> int:
     load_saved_language()
     from .extractors import extract_all
 
-    # exists() a törött szimlinkre False-t ad, pedig arról is van mit mutatni
+    # exists() returns False for a broken symlink, yet there is still info to show
     if not (target.exists() or target.is_symlink()):
         print(f"{tr('Not found')}: {target}", file=sys.stderr)
         return 1

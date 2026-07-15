@@ -1,4 +1,4 @@
-"""Videó- és audiofájlok adatai ffprobe-bal (JSON kimenet)."""
+"""Video and audio file data via ffprobe (JSON output)."""
 
 from __future__ import annotations
 
@@ -27,7 +27,7 @@ AUDIO_EXTENSIONS = {
 }
 MEDIA_EXTENSIONS = VIDEO_EXTENSIONS | AUDIO_EXTENSIONS
 
-# Címkék, amelyeket előre sorolunk az audio "Címkék" szekcióban.
+# Tags listed first in the audio "Tags" section.
 _PRIORITY_TAGS = [
     ("title", "Title"),
     ("artist", "Artist"),
@@ -148,13 +148,13 @@ def _container_section(fmt: dict) -> Section:
 
 
 def _tags_section(fmt: dict, streams: list[dict]) -> Section | None:
-    """Konténer- és stream-címkék összegyűjtve (audio fájlok metaadatai)."""
+    """Container and stream tags collected together (audio file metadata)."""
     tags: dict[str, str] = {}
     for source in [fmt] + streams:
         for key, value in (source.get("tags") or {}).items():
             tags.setdefault(key.lower(), str(value))
 
-    # A sáv-specifikus technikai címkék nem ide valók.
+    # Track-specific technical tags do not belong here.
     for noise in ("language", "handler_name", "vendor_id", "creation_time",
                   "major_brand", "minor_version", "compatible_brands"):
         tags.pop(noise, None)

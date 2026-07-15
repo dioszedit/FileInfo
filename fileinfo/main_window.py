@@ -1,4 +1,4 @@
-"""Főablak: fájlfa + metaadat-panel, toolbar, menük, státuszsor."""
+"""Main window: file tree + metadata panel, toolbar, menus, status bar."""
 
 from __future__ import annotations
 
@@ -32,7 +32,7 @@ _DOCS_DIR = Path(__file__).resolve().parent.parent / "docs"
 
 
 def _guide_paths() -> tuple[Path, Path]:
-    """(HTML, markdown-tartalék) a felület nyelvén; ha nincs, angolul."""
+    """(HTML, markdown fallback) in the UI language; English if unavailable."""
     html = _DOCS_DIR / f"guide_{i18n.language()}.html"
     if not html.exists():
         html = _DOCS_DIR / "guide_en.html"
@@ -47,7 +47,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("FileInfo")
         self._settings = QSettings(SETTINGS_ORG, SETTINGS_APP)
 
-        # -- fájlfa ------------------------------------------------------
+        # -- file tree ---------------------------------------------------
         self._model = QFileSystemModel(self)
         self._model.setRootPath("/")
         self._apply_hidden_filter(
@@ -62,7 +62,7 @@ class MainWindow(QMainWindow):
         self._tree.sortByColumn(0, Qt.SortOrder.AscendingOrder)
         self._tree.selectionModel().selectionChanged.connect(self._on_selection)
 
-        # -- metaadat panel ------------------------------------------------
+        # -- metadata panel ------------------------------------------------
         self._panel = MetadataPanel()
 
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
         self._restore_state()
         self._warn_missing_deps()
 
-    # -- felépítés ---------------------------------------------------------
+    # -- construction ------------------------------------------------------
 
     def _build_toolbar(self) -> None:
         toolbar = QToolBar(tr("Toolbar"))
@@ -151,7 +151,7 @@ class MainWindow(QMainWindow):
         deps.triggered.connect(lambda: DepsDialog(self).exec())
         help_menu.addAction(deps)
 
-    # -- műveletek -----------------------------------------------------------
+    # -- actions -------------------------------------------------------------
 
     def _set_root(self, folder: Path) -> None:
         self._tree.setRootIndex(self._model.index(str(folder)))
@@ -196,11 +196,11 @@ class MainWindow(QMainWindow):
                 self._open_guide_webengine()
                 return
             except Exception:
-                pass  # WebEngine hiányzik/hibás -> Markdown-tartalék
+                pass  # WebEngine missing/broken -> Markdown fallback
         self._open_guide_fallback()
 
     def _open_guide_webengine(self) -> None:
-        """Szép HTML útmutató appon belül; a külső linkek böngészőben nyílnak."""
+        """Nice in-app HTML guide; external links open in the browser."""
         from PySide6.QtCore import QUrl
         from PySide6.QtGui import QDesktopServices
         from PySide6.QtWebEngineCore import QWebEnginePage
@@ -226,7 +226,7 @@ class MainWindow(QMainWindow):
         dialog.exec()
 
     def _open_guide_fallback(self) -> None:
-        """Markdown-os tartalék, ha a QtWebEngine nem érhető el."""
+        """Markdown fallback when QtWebEngine is unavailable."""
         guide_md = _guide_paths()[1]
         if not guide_md.exists():
             self.statusBar().showMessage(tr("User guide not found"), 3000)
@@ -261,8 +261,8 @@ class MainWindow(QMainWindow):
             self._settings.setValue("geometry", self.saveGeometry())
             self._settings.setValue("splitter", self._splitter.saveState())
             self._settings.sync()
-            # Új folyamat + szabályos kilépés (az execv a futó Cocoa-app alatt
-            # "Task policy set failed" üzenetet okozna a konzolban).
+            # New process + clean exit (execv under a running Cocoa app
+            # would print "Task policy set failed" to the console).
             try:
                 subprocess.Popen(
                     [sys.executable, "-m", "fileinfo"],
@@ -274,7 +274,7 @@ class MainWindow(QMainWindow):
             from PySide6.QtWidgets import QApplication
             QApplication.quit()
 
-    # -- függőségek -----------------------------------------------------------
+    # -- dependencies -----------------------------------------------------------
 
     def _warn_missing_deps(self) -> None:
         missing = missing_dependencies()
@@ -288,7 +288,7 @@ class MainWindow(QMainWindow):
             self._settings.setValue("depsWarned", True)
             DepsDialog(self).exec()
 
-    # -- ablakállapot -----------------------------------------------------------
+    # -- window state -----------------------------------------------------------
 
     def _restore_state(self) -> None:
         geometry = self._settings.value("geometry")

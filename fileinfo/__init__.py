@@ -1,4 +1,4 @@
-"""FileInfo — fájl-metaadat néző macOS-re."""
+"""FileInfo — file metadata viewer for macOS."""
 
 __version__ = "1.0.0"
 

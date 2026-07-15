@@ -1,4 +1,4 @@
-"""QApplication létrehozása, első indulási nyelvválasztó, főablak indítása."""
+"""QApplication setup, first-launch language chooser, main window startup."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ ICON_PATH = Path(__file__).resolve().parent / "resources" / "icon.png"
 
 
 class LanguageDialog(QDialog):
-    """Első indításkor megjelenő nyelvválasztó (az alapnyelven, angolul)."""
+    """Language chooser shown on first launch (in the default language, English)."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -47,7 +47,7 @@ class LanguageDialog(QDialog):
 
 
 def run_gui() -> int:
-    # A QtWebEngine (útmutató-nézegető) ezt a QApplication előtt igényli.
+    # QtWebEngine (the guide viewer) requires this before the QApplication.
     from PySide6.QtCore import QCoreApplication
     QCoreApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
 
@@ -68,8 +68,8 @@ def run_gui() -> int:
             i18n.set_language(dialog.selected)
             settings.setValue("language", dialog.selected)
         else:
-            # Esc/bezárás: az alapnyelv csak erre a futásra él,
-            # a választó a következő induláskor újra megjelenik.
+            # Esc/close: the default language applies to this run only;
+            # the chooser appears again on the next launch.
             i18n.set_language(i18n.DEFAULT_LANGUAGE)
 
     from PySide6.QtCore import QThreadPool

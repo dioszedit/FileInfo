@@ -1,4 +1,4 @@
-"""Függőség-állapot dialógus telepítési útmutatóval."""
+"""Dependency status dialog with installation instructions."""
 
 from __future__ import annotations
 

@@ -1,4 +1,4 @@
-"""Jobb oldali panel: előnézet, fájlnév, szűrő, szekciózott metaadat-fa."""
+"""Right-hand panel: preview, file name, filter, sectioned metadata tree."""
 
 from __future__ import annotations
 
@@ -43,7 +43,7 @@ class MetadataPanel(QWidget):
         self._title.setFont(font)
         self._title.setWordWrap(True)
         self._title.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
-        # A fájlnév fájlból származó adat — soha ne értelmeződjön HTML-ként.
+        # The file name is data from the file — never interpret it as HTML.
         self._title.setTextFormat(Qt.TextFormat.PlainText)
 
         self._filter = QLineEdit(placeholderText=tr("Filter metadata…"))
@@ -70,12 +70,12 @@ class MetadataPanel(QWidget):
                   activated=lambda: (self._filter.setFocus(),
                                      self._filter.selectAll()))
 
-        # Kijelölés-váltás debounce: gyors nyilazgatásnál csak az utolsó fut le.
+        # Selection-change debounce: only the last one runs when arrowing quickly.
         self._debounce = QTimer(self, singleShot=True, interval=200)
         self._debounce.timeout.connect(self._start_extraction)
         self._pending_path: Path | None = None
 
-    # -- publikus API --------------------------------------------------
+    # -- public API ----------------------------------------------------
 
     def show_file(self, path: Path) -> None:
         self._pending_path = path
@@ -99,7 +99,7 @@ class MetadataPanel(QWidget):
                 lines.append(f"{fld.key}: {fld.value}")
         return "\n".join(lines)
 
-    # -- kinyerés ------------------------------------------------------
+    # -- extraction ----------------------------------------------------
 
     def _start_extraction(self) -> None:
         if self._pending_path is None:
@@ -161,7 +161,7 @@ class MetadataPanel(QWidget):
         self._tree.resizeColumnToContents(0)
         self._tree.setColumnWidth(0, min(self._tree.columnWidth(0), 260))
 
-    # -- előnézet --------------------------------------------------------
+    # -- preview ---------------------------------------------------------
 
     def _show_icon_fallback(self, path: Path) -> None:
         icon = self._icon_provider.icon(QFileInfo(str(path)))
@@ -176,7 +176,7 @@ class MetadataPanel(QWidget):
         if request_id != self._request_id:
             return
         if not isinstance(image, QImage) or image.isNull():
-            return  # marad a Finder-ikon
+            return  # keep the Finder icon
         pixmap = QPixmap.fromImage(image)
         if pixmap.height() > THUMB_HEIGHT:
             pixmap = pixmap.scaledToHeight(
@@ -184,7 +184,7 @@ class MetadataPanel(QWidget):
         self._thumb.setPixmap(pixmap)
         self._thumb.show()
 
-    # -- szűrés / vágólap ------------------------------------------------
+    # -- filtering / clipboard ---------------------------------------------
 
     def _apply_filter(self, text: str) -> None:
         needle = text.strip().lower()

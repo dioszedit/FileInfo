@@ -1,4 +1,4 @@
-"""Segédprogramok meglétének ellenőrzése."""
+"""Checks for the presence of helper tools."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ from .i18n import tr
 @dataclass
 class DepStatus:
     name: str
-    path: str | None          # None = nincs telepítve
-    purpose: str              # mire való (angol tr()-kulcs)
-    install_cmd: str | None   # None = beépített macOS eszköz
+    path: str | None          # None = not installed
+    purpose: str              # what it is for (English tr() key)
+    install_cmd: str | None   # None = built-in macOS tool
     critical: bool
 
 

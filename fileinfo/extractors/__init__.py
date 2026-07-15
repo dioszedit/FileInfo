@@ -1,4 +1,4 @@
-"""Extraktor-diszpécser: fájltípus szerint válogatja össze a szekciókat."""
+"""Extractor dispatcher: assembles the sections based on file type."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ __all__ = ["Field", "Section", "extract_all"]
 def _safe(extractor, path: Path) -> list[Section]:
     try:
         return extractor.extract(path)
-    except Exception as exc:  # egy hibás extraktor ne vigye el az egészet
+    except Exception as exc:  # one broken extractor must not take down the rest
         err = Section(tr("Errors"))
         err.add(type(exc).__name__, str(exc) or tr("unknown error"))
         return [err]
@@ -31,7 +31,7 @@ def extract_all(path: Path) -> list[Section]:
         elif suffix in image.IMAGE_EXTENSIONS:
             sections += _safe(image, path)
     if path.exists():
-        # mappákra (pl. .app csomagokra) is működik az mdls
+        # mdls works for folders too (e.g. .app bundles)
         sections += _safe(spotlight, path)
 
     return sections

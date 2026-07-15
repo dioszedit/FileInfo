@@ -1,4 +1,4 @@
-"""Közös adatmodell és segédfüggvények az extraktorokhoz."""
+"""Shared data model and helper functions for the extractors."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ class Section:
     fields: list[Field] = field(default_factory=list)
 
     def add(self, key: str, value: object) -> None:
-        """Mező hozzáadása; üres/None értékek kihagyva."""
+        """Add a field; empty/None values are skipped."""
         if value is None:
             return
         text = str(value).strip()
@@ -31,7 +31,7 @@ class Section:
 
 
 def run_tool(cmd: list[str], timeout: int = 15) -> str | None:
-    """Külső parancs futtatása; hiányzó eszköznél vagy hibánál None."""
+    """Run an external command; None if the tool is missing or fails."""
     exe = shutil.which(cmd[0])
     if exe is None:
         return None
@@ -92,7 +92,7 @@ def humanize_key(key: str) -> str:
     out = []
     for i, word in enumerate(words):
         if word.isupper():
-            out.append(word)          # betűszavak (GPS, ISO) maradnak
+            out.append(word)          # acronyms (GPS, ISO) stay as-is
         elif i == 0:
             out.append(word.capitalize())
         else:
@@ -100,7 +100,7 @@ def humanize_key(key: str) -> str:
     return " ".join(out)
 
 
-# A leggyakoribb ISO-639-2 kódok; ismeretlen kódnál a nyers kód jelenik meg.
+# The most common ISO-639-2 codes; unknown codes are shown verbatim.
 LANGUAGES = {
     "hun": "Hungarian", "eng": "English", "ger": "German", "deu": "German",
     "fre": "French", "fra": "French", "ita": "Italian", "spa": "Spanish",
@@ -115,6 +115,6 @@ LANGUAGES = {
 }
 
 def language_name(code: str) -> str:
-    """A sáv nyelvének neve a felület nyelvén (az angol név a tr() kulcsa)."""
+    """Name of the track's language in the UI language (English name is the tr() key)."""
     en_name = LANGUAGES.get(code.lower())
     return tr(en_name) if en_name else code

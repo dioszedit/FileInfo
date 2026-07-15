@@ -1,4 +1,4 @@
-"""Fájlrendszer-szintű adatok: méret, dátumok, jogosultságok."""
+"""Filesystem-level data: size, dates, permissions."""
 
 from __future__ import annotations
 

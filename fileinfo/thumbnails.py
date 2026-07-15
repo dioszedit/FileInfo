@@ -1,4 +1,4 @@
-"""Előnézeti kép készítése (QImage — háttérszálban is biztonságos)."""
+"""Thumbnail image creation (QImage — safe even on a background thread)."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ MAX_PX = 480
 
 def _read_scaled(path: Path) -> QImage | None:
     reader = QImageReader(str(path))
-    reader.setAutoTransform(True)  # EXIF tájolás követése
+    reader.setAutoTransform(True)  # honor EXIF orientation
     size = reader.size()
     if size.isValid() and (size.width() > MAX_PX or size.height() > MAX_PX):
         scaled = QSize(size)
@@ -73,5 +73,5 @@ def make_thumbnail_image(path: Path) -> QImage | None:
     if suffix in VIDEO_EXTENSIONS:
         return _video_frame(path) or _quicklook(path)
     if suffix in AUDIO_EXTENSIONS:
-        return _audio_cover(path)  # nincs borító -> None -> a fájl ikonja marad a panelen
+        return _audio_cover(path)  # no cover art -> None -> the panel keeps the file icon
     return _quicklook(path)

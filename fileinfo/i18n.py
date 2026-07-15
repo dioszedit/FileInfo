@@ -60,8 +60,8 @@ def tr(text: str) -> str:
 
 
 def trf(text: str, **kwargs) -> str:
-    """tr() + .format(); hibás fordítási placeholder esetén az angol
-    forrásszövegre esik vissza ahelyett, hogy összeomlana."""
+    """tr() + .format(); on a bad translation placeholder it falls back
+    to the English source string instead of crashing."""
     translated = tr(text)
     try:
         return translated.format(**kwargs)
