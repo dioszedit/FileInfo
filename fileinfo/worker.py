@@ -49,5 +49,34 @@ class ThumbnailTask(QRunnable):
         self.signals.finished.emit(self.request_id, image)
 
 
+class HashSignals(QObject):
+    finished = Signal(int, str)    # request_id, hex digest
+    failed = Signal(int, str)
+
+
+class HashTask(QRunnable):
+    """SHA-256 in chunks — constant memory even for huge files."""
+
+    CHUNK = 4 * 1024 * 1024
+
+    def __init__(self, request_id: int, path: Path) -> None:
+        super().__init__()
+        self.request_id = request_id
+        self.path = path
+        self.signals = HashSignals()
+
+    def run(self) -> None:
+        import hashlib
+        try:
+            digest = hashlib.sha256()
+            with open(self.path, "rb") as fh:
+                while chunk := fh.read(self.CHUNK):
+                    digest.update(chunk)
+        except OSError as exc:
+            self.signals.failed.emit(self.request_id, str(exc))
+            return
+        self.signals.finished.emit(self.request_id, digest.hexdigest())
+
+
 def submit(task: QRunnable) -> None:
     QThreadPool.globalInstance().start(task)

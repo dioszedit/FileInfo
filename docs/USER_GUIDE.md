@@ -28,6 +28,7 @@ brew install ffmpeg exiftool
 - **Filter box**: narrows the list as you type.
 - **Right-click a row**: "Copy value" / "Copy row".
 - **Language menu**: switch the UI language (Hungarian, English, German, Spanish, French); takes effect after a restart.
+- **SHA-256 button (bottom of the panel)**: computes the selected file's checksum in the background, for any file size.
 - **View → Show hidden files**: the tree hides dotfiles by default, like Finder.
 
 ### Toolbar

@@ -173,5 +173,7 @@
   "View": "Ansicht",
   "Show hidden files": "Versteckte Dateien anzeigen",
   "Install: {cmd}": "Installation: {cmd}",
-  "Root: {folder}": "Stammordner: {folder}"
+  "Root: {folder}": "Stammordner: {folder}",
+  "Compute SHA-256": "SHA-256 berechnen",
+  "Computing…": "Wird berechnet…"
 }

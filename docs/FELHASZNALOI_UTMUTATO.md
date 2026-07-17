@@ -50,6 +50,7 @@ alias fileinfo='/eleresi/ut/FileInfo/run.sh'
 - **Szűrőmező**: gépelés közben szűkíti a listát — pl. írd be: `nyelv`, és csak a nyelvi adatok maradnak.
 - **Jobb klikk egy soron**: „Érték másolása" / „Sor másolása".
 - **Nyelv menü**: a felület nyelve váltható (magyar, angol, német, spanyol, francia); újraindítás után érvényesül.
+- **SHA-256 gomb (a panel alján)**: a kijelölt fájl ellenőrzőösszege háttérben számolva, bármekkora fájlra.
 - **Nézet → Rejtett fájlok megjelenítése**: a fa alapból elrejti a pont-kezdetű fájlokat.
 
 ### Eszköztár

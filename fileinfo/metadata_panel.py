@@ -8,9 +8,11 @@ from PySide6.QtCore import Qt, QTimer, QFileInfo
 from PySide6.QtGui import QFont, QGuiApplication, QImage, QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QFileIconProvider,
+    QHBoxLayout,
     QLabel,
     QLineEdit,
     QMenu,
+    QPushButton,
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
@@ -19,7 +21,7 @@ from PySide6.QtWidgets import (
 
 from .extractors.base import Section
 from .i18n import tr, trf
-from .worker import ExtractTask, ThumbnailTask, submit
+from .worker import ExtractTask, HashTask, ThumbnailTask, submit
 
 THUMB_HEIGHT = 240
 
@@ -60,11 +62,24 @@ class MetadataPanel(QWidget):
         self._tree.customContextMenuRequested.connect(self._context_menu)
         self._tree.header().setStretchLastSection(True)
 
+        # SHA-256 row: computed on demand (a large file can take a while)
+        self._hash_button = QPushButton("🔒 " + tr("Compute SHA-256"))
+        self._hash_button.clicked.connect(self._start_hash)
+        self._hash_button.setEnabled(False)
+        self._hash_value = QLineEdit()
+        self._hash_value.setReadOnly(True)
+        self._hash_value.setFont(QFont("Menlo", 11))
+        self._hash_value.hide()
+        hash_row = QHBoxLayout()
+        hash_row.addWidget(self._hash_button)
+        hash_row.addWidget(self._hash_value, stretch=1)
+
         layout = QVBoxLayout(self)
         layout.addWidget(self._thumb)
         layout.addWidget(self._title)
         layout.addWidget(self._filter)
         layout.addWidget(self._tree, stretch=1)
+        layout.addLayout(hash_row)
 
         QShortcut(QKeySequence.StandardKey.Find, self,
                   activated=lambda: (self._filter.setFocus(),
@@ -97,6 +112,8 @@ class MetadataPanel(QWidget):
             lines.append(f"\n=== {section.title} ===")
             for fld in section.fields:
                 lines.append(f"{fld.key}: {fld.value}")
+        if not self._hash_value.isHidden() and self._hash_value.text():
+            lines.append(f"\nSHA-256: {self._hash_value.text()}")
         return "\n".join(lines)
 
     # -- extraction ----------------------------------------------------
@@ -115,6 +132,7 @@ class MetadataPanel(QWidget):
         loading = QTreeWidgetItem([tr("Loading…"), ""])
         self._tree.addTopLevelItem(loading)
         self._show_icon_fallback(path)
+        self._reset_hash_row(path)
 
         task = ExtractTask(request_id, path)
         task.signals.finished.connect(self._on_extracted)
@@ -160,6 +178,41 @@ class MetadataPanel(QWidget):
             top.setExpanded(True)
         self._tree.resizeColumnToContents(0)
         self._tree.setColumnWidth(0, min(self._tree.columnWidth(0), 260))
+
+    # -- SHA-256 ---------------------------------------------------------
+
+    def _reset_hash_row(self, path: Path) -> None:
+        self._hash_value.hide()
+        self._hash_value.clear()
+        self._hash_button.setText("🔒 " + tr("Compute SHA-256"))
+        self._hash_button.setEnabled(path.is_file())
+
+    def _start_hash(self) -> None:
+        if self._current_path is None or not self._current_path.is_file():
+            return
+        self._hash_button.setEnabled(False)
+        self._hash_button.setText("⏳ " + tr("Computing…"))
+        task = HashTask(self._request_id, self._current_path)
+        task.signals.finished.connect(self._on_hash)
+        task.signals.failed.connect(self._on_hash_failed)
+        submit(task)
+
+    def _on_hash(self, request_id: int, digest: str) -> None:
+        if request_id != self._request_id:
+            return  # another file was selected in the meantime
+        self._hash_button.setText("✅ SHA-256")
+        self._hash_value.setText(digest)
+        self._hash_value.show()
+        self._hash_value.setCursorPosition(0)
+
+    def _on_hash_failed(self, request_id: int, message: str) -> None:
+        if request_id != self._request_id:
+            return
+        self._hash_button.setEnabled(True)
+        self._hash_button.setText("🔒 " + tr("Compute SHA-256"))
+        window = self.window()
+        if hasattr(window, "statusBar"):
+            window.statusBar().showMessage(f'{tr("Error")}: {message}', 5000)
 
     # -- preview ---------------------------------------------------------
 

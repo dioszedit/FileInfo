@@ -173,5 +173,7 @@
   "View": "Ver",
   "Show hidden files": "Mostrar archivos ocultos",
   "Install: {cmd}": "Instalación: {cmd}",
-  "Root: {folder}": "Raíz: {folder}"
+  "Root: {folder}": "Raíz: {folder}",
+  "Compute SHA-256": "Calcular SHA-256",
+  "Computing…": "Calculando…"
 }

@@ -173,5 +173,7 @@
   "View": "Nézet",
   "Show hidden files": "Rejtett fájlok megjelenítése",
   "Install: {cmd}": "Telepítés: {cmd}",
-  "Root: {folder}": "Gyökér: {folder}"
+  "Root: {folder}": "Gyökér: {folder}",
+  "Compute SHA-256": "SHA-256 kiszámítása",
+  "Computing…": "Számítás…"
 }
