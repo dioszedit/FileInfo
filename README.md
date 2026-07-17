@@ -22,9 +22,9 @@ Speaks five languages (English, Deutsch, Español, Français, magyar): a languag
 
 | Video: streams, codecs, languages | Music: tags, cover art, SHA-256 |
 |---|---|
-| ![Video metadata](docs/screenshots/video.png) | ![Music metadata with SHA-256](docs/screenshots/music-sha256.png) |
+| ![Video metadata](docs/screenshots/browse-video.png) | ![Music metadata with SHA-256](docs/screenshots/music-tags-sha256.png) |
 
-![Photo EXIF metadata](docs/screenshots/photo-exif.png)
+![Photo EXIF metadata](docs/screenshots/photo-exif-gps.png)
 
 ## Install
 
