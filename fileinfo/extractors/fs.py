@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
+import contextlib
 import grp
 import mimetypes
-import os
 import pwd
 import stat as stat_mod
 from datetime import datetime
@@ -26,10 +26,8 @@ def extract(path: Path) -> list[Section]:
     sec.add(tr("Path"), str(path))
 
     if path.is_symlink():
-        try:
-            sec.add(tr("Symlink target"), os.readlink(path))
-        except OSError:
-            pass
+        with contextlib.suppress(OSError):
+            sec.add(tr("Symlink target"), str(path.readlink()))
         st = path.stat() if path.exists() else st
 
     if path.is_dir():

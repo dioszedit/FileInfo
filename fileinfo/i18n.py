@@ -43,8 +43,7 @@ def set_language(lang: str) -> None:
         _table = {}
         return
     try:
-        _table = json.loads(
-            (_LOCALES_DIR / f"{_current}.json").read_text(encoding="utf-8"))
+        _table = json.loads((_LOCALES_DIR / f"{_current}.json").read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         _table = {}
 
@@ -59,7 +58,7 @@ def tr(text: str) -> str:
     return _table.get(text, text)
 
 
-def trf(text: str, **kwargs) -> str:
+def trf(text: str, **kwargs: object) -> str:
     """tr() + .format(); on a bad translation placeholder it falls back
     to the English source string instead of crashing."""
     translated = tr(text)
@@ -74,6 +73,7 @@ def load_saved_language() -> str | None:
     from PySide6.QtCore import QSettings
 
     from . import SETTINGS_APP, SETTINGS_ORG
+
     settings = QSettings(SETTINGS_ORG, SETTINGS_APP)
     lang = settings.value("language")
     if lang:

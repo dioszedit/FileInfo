@@ -49,6 +49,7 @@ class LanguageDialog(QDialog):
 def run_gui() -> int:
     # QtWebEngine (the guide viewer) requires this before the QApplication.
     from PySide6.QtCore import QCoreApplication
+
     QCoreApplication.setAttribute(Qt.ApplicationAttribute.AA_ShareOpenGLContexts)
 
     app = QApplication(sys.argv)
@@ -72,14 +73,9 @@ def run_gui() -> int:
             # the chooser appears again on the next launch.
             i18n.set_language(i18n.DEFAULT_LANGUAGE)
 
-    from PySide6.QtCore import QThreadPool
+    from .worker import shutdown_workers
 
-    def drain_workers() -> None:
-        pool = QThreadPool.globalInstance()
-        pool.clear()
-        pool.waitForDone(3000)
-
-    app.aboutToQuit.connect(drain_workers)
+    app.aboutToQuit.connect(shutdown_workers)
 
     from .main_window import MainWindow
 

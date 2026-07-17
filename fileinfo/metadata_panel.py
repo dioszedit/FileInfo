@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from PySide6.QtCore import Qt, QTimer, QFileInfo
+from PySide6.QtCore import QFileInfo, QPoint, Qt, QTimer
 from PySide6.QtGui import QFont, QGuiApplication, QImage, QKeySequence, QPixmap, QShortcut
 from PySide6.QtWidgets import (
     QFileIconProvider,
@@ -86,9 +86,8 @@ class MetadataPanel(QWidget):
         layout.addWidget(self._tree, stretch=1)
         layout.addLayout(hash_row)
 
-        QShortcut(QKeySequence.StandardKey.Find, self,
-                  activated=lambda: (self._filter.setFocus(),
-                                     self._filter.selectAll()))
+        find_shortcut = QShortcut(QKeySequence.StandardKey.Find, self)
+        find_shortcut.activated.connect(self._focus_filter)
 
         # Selection-change debounce: only the last one runs when arrowing quickly.
         self._debounce = QTimer(self, singleShot=True, interval=200)
@@ -167,7 +166,7 @@ class MetadataPanel(QWidget):
         QTreeWidgetItem(self._tree, [tr("Error"), message])
         window = self.window()
         if hasattr(window, "statusBar"):
-            window.statusBar().showMessage(f'{tr("Error")}: {message}', 5000)
+            window.statusBar().showMessage(f"{tr('Error')}: {message}", 5000)
 
     def _populate(self, sections: list[Section]) -> None:
         self._tree.clear()
@@ -224,7 +223,7 @@ class MetadataPanel(QWidget):
         self._hash_button.setText("🔒 " + tr("Compute SHA-256"))
         window = self.window()
         if hasattr(window, "statusBar"):
-            window.statusBar().showMessage(f'{tr("Error")}: {message}', 5000)
+            window.statusBar().showMessage(f"{tr('Error')}: {message}", 5000)
 
     # -- preview ---------------------------------------------------------
 
@@ -244,33 +243,35 @@ class MetadataPanel(QWidget):
             return  # keep the Finder icon
         pixmap = QPixmap.fromImage(image)
         if pixmap.height() > THUMB_HEIGHT:
-            pixmap = pixmap.scaledToHeight(
-                THUMB_HEIGHT, Qt.TransformationMode.SmoothTransformation)
+            pixmap = pixmap.scaledToHeight(THUMB_HEIGHT, Qt.TransformationMode.SmoothTransformation)
         self._thumb.setPixmap(pixmap)
         self._thumb.show()
 
     # -- filtering / clipboard ---------------------------------------------
 
+    def _focus_filter(self) -> None:
+        self._filter.setFocus()
+        self._filter.selectAll()
+
     def _apply_filter(self, text: str) -> None:
         needle = text.strip().lower()
         for i in range(self._tree.topLevelItemCount()):
             top = self._tree.topLevelItem(i)
+            if top is None:
+                continue
             title_match = bool(needle) and needle in top.text(0).lower()
             visible_children = 0
             for j in range(top.childCount()):
                 child = top.child(j)
-                match = (
-                    not needle
-                    or title_match
-                    or needle in child.text(0).lower()
-                    or needle in child.text(1).lower()
-                )
+                if child is None:
+                    continue
+                match = not needle or title_match or needle in child.text(0).lower() or needle in child.text(1).lower()
                 child.setHidden(not match)
                 if match:
                     visible_children += 1
             top.setHidden(visible_children == 0 and top.childCount() > 0)
 
-    def _context_menu(self, pos) -> None:
+    def _context_menu(self, pos: QPoint) -> None:
         item = self._tree.itemAt(pos)
         if item is None or item.parent() is None:
             return

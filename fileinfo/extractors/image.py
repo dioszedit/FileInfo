@@ -11,9 +11,28 @@ from ..i18n import tr
 from .base import Section, humanize_key, run_tool
 
 IMAGE_EXTENSIONS = {
-    ".jpg", ".jpeg", ".png", ".heic", ".heif", ".tif", ".tiff", ".gif",
-    ".webp", ".bmp", ".avif", ".jp2", ".psd", ".ico", ".dng", ".cr2",
-    ".cr3", ".nef", ".arw", ".orf", ".rw2", ".raf",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".heic",
+    ".heif",
+    ".tif",
+    ".tiff",
+    ".gif",
+    ".webp",
+    ".bmp",
+    ".avif",
+    ".jp2",
+    ".psd",
+    ".ico",
+    ".dng",
+    ".cr2",
+    ".cr3",
+    ".nef",
+    ".arw",
+    ".orf",
+    ".rw2",
+    ".raf",
 }
 
 # Priority EXIF tags: (exiftool tag, English label as tr() key, formatter).
@@ -48,6 +67,7 @@ def _pillow_section(path: Path) -> Section:
     sec = Section(tr("Image"))
     try:
         from PIL import Image
+
         with Image.open(path) as img:
             sec.add(tr("Resolution"), f"{img.width} × {img.height}")
             sec.add(tr("Format"), img.format)
@@ -117,8 +137,10 @@ def _exiftool_sections(path: Path) -> list[Section]:
     lat, lon = composite.get("GPSLatitude"), composite.get("GPSLongitude")
     if lat is not None and lon is not None:
         gps = Section("GPS")
+        lat_f: float | None
+        lon_f: float | None
         try:
-            lat_f, lon_f = float(lat), float(lon)
+            lat_f, lon_f = float(str(lat)), float(str(lon))
             gps.add(tr("Latitude"), f"{lat_f:.6f}")
             gps.add(tr("Longitude"), f"{lon_f:.6f}")
         except (TypeError, ValueError):
@@ -158,6 +180,7 @@ def _pillow_exif_fallback(path: Path) -> list[Section]:
     try:
         from PIL import Image
         from PIL.ExifTags import TAGS
+
         with Image.open(path) as img:
             raw = img.getexif()
     except Exception:

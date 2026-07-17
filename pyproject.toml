@@ -1,0 +1,53 @@
+[project]
+name = "fileinfo"
+version = "1.1.1"
+description = "File metadata viewer for macOS"
+requires-python = ">=3.10"
+dependencies = [
+    "PySide6>=6.10,<7",
+    "Pillow>=10",
+]
+
+[dependency-groups]
+dev = [
+    "ruff",
+    "mypy",
+]
+
+[tool.ruff]
+target-version = "py310"  # a README Python 3.10+-t ígér — ne engedjünk be újabb szintaxist
+line-length = 120
+src = ["."]
+
+[tool.ruff.lint]
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort (import rendezés)
+    "UP",     # pyupgrade (modern szintaxis)
+    "B",      # flake8-bugbear (gyakori hibák)
+    "SIM",    # flake8-simplify
+    "C4",     # flake8-comprehensions
+    "RET",    # flake8-return
+    "PTH",    # pathlib használata os.path helyett
+    "RUF",    # ruff-specifikus szabályok
+]
+ignore = [
+    "E501",   # sorhossz — a formatter kezeli, a maradék néhány hosszú sor elfogadott
+]
+allowed-confusables = ["×"]  # szorzójel a felbontás kijelzésében (pl. "1920 × 1080")
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.10"
+files = ["fileinfo"]
+strict = false
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+warn_return_any = true
+disallow_untyped_defs = true

@@ -84,7 +84,7 @@ def humanize_key(key: str) -> str:
     """kMDItemPixelHeight -> Pixel Height, album_artist -> Album Artist."""
     for prefix in ("kMDItem", "kMD", "com_apple_"):
         if key.startswith(prefix):
-            key = key[len(prefix):]
+            key = key[len(prefix) :]
             break
     key = key.replace("_", " ").replace("-", " ")
     key = _CAMEL_RE.sub(" ", key)
@@ -92,7 +92,7 @@ def humanize_key(key: str) -> str:
     out = []
     for i, word in enumerate(words):
         if word.isupper():
-            out.append(word)          # acronyms (GPS, ISO) stay as-is
+            out.append(word)  # acronyms (GPS, ISO) stay as-is
         elif i == 0:
             out.append(word.capitalize())
         else:
@@ -102,17 +102,48 @@ def humanize_key(key: str) -> str:
 
 # The most common ISO-639-2 codes; unknown codes are shown verbatim.
 LANGUAGES = {
-    "hun": "Hungarian", "eng": "English", "ger": "German", "deu": "German",
-    "fre": "French", "fra": "French", "ita": "Italian", "spa": "Spanish",
-    "por": "Portuguese", "rus": "Russian", "pol": "Polish", "cze": "Czech",
-    "ces": "Czech", "slk": "Slovak", "slo": "Slovak", "rum": "Romanian",
-    "ron": "Romanian", "srp": "Serbian", "hrv": "Croatian", "ukr": "Ukrainian",
-    "jpn": "Japanese", "chi": "Chinese", "zho": "Chinese", "kor": "Korean",
-    "ara": "Arabic", "tur": "Turkish", "nld": "Dutch", "dut": "Dutch",
-    "swe": "Swedish", "nor": "Norwegian", "dan": "Danish", "fin": "Finnish",
-    "gre": "Greek", "ell": "Greek", "heb": "Hebrew", "hin": "Hindi",
-    "tha": "Thai", "vie": "Vietnamese", "ind": "Indonesian", "und": "undetermined",
+    "hun": "Hungarian",
+    "eng": "English",
+    "ger": "German",
+    "deu": "German",
+    "fre": "French",
+    "fra": "French",
+    "ita": "Italian",
+    "spa": "Spanish",
+    "por": "Portuguese",
+    "rus": "Russian",
+    "pol": "Polish",
+    "cze": "Czech",
+    "ces": "Czech",
+    "slk": "Slovak",
+    "slo": "Slovak",
+    "rum": "Romanian",
+    "ron": "Romanian",
+    "srp": "Serbian",
+    "hrv": "Croatian",
+    "ukr": "Ukrainian",
+    "jpn": "Japanese",
+    "chi": "Chinese",
+    "zho": "Chinese",
+    "kor": "Korean",
+    "ara": "Arabic",
+    "tur": "Turkish",
+    "nld": "Dutch",
+    "dut": "Dutch",
+    "swe": "Swedish",
+    "nor": "Norwegian",
+    "dan": "Danish",
+    "fin": "Finnish",
+    "gre": "Greek",
+    "ell": "Greek",
+    "heb": "Hebrew",
+    "hin": "Hindi",
+    "tha": "Thai",
+    "vie": "Vietnamese",
+    "ind": "Indonesian",
+    "und": "undetermined",
 }
+
 
 def language_name(code: str) -> str:
     """Name of the track's language in the UI language (English name is the tr() key)."""

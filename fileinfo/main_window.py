@@ -2,19 +2,20 @@
 
 from __future__ import annotations
 
+import contextlib
 import subprocess
 import sys
 from pathlib import Path
 
-from PySide6.QtCore import QDir, QModelIndex, QSettings, Qt
-from PySide6.QtGui import QAction, QGuiApplication, QKeySequence
+from PySide6.QtCore import QDir, QItemSelection, QModelIndex, QSettings, Qt
+from PySide6.QtGui import QAction, QCloseEvent, QGuiApplication, QKeySequence
 from PySide6.QtWidgets import (
     QDialog,
     QDialogButtonBox,
-    QMessageBox,
     QFileDialog,
     QFileSystemModel,
     QMainWindow,
+    QMessageBox,
     QSplitter,
     QTextBrowser,
     QToolBar,
@@ -36,8 +37,7 @@ def _guide_paths() -> tuple[Path, Path]:
     html = _DOCS_DIR / f"guide_{i18n.language()}.html"
     if not html.exists():
         html = _DOCS_DIR / "guide_en.html"
-    md = _DOCS_DIR / ("FELHASZNALOI_UTMUTATO.md" if i18n.language() == "hu"
-                      else "USER_GUIDE.md")
+    md = _DOCS_DIR / ("FELHASZNALOI_UTMUTATO.md" if i18n.language() == "hu" else "USER_GUIDE.md")
     return html, md
 
 
@@ -50,8 +50,7 @@ class MainWindow(QMainWindow):
         # -- file tree ---------------------------------------------------
         self._model = QFileSystemModel(self)
         self._model.setRootPath("/")
-        self._apply_hidden_filter(
-            self._settings.value("showHidden", False, type=bool))
+        self._apply_hidden_filter(bool(self._settings.value("showHidden", False, type=bool)))
 
         self._tree = QTreeView()
         self._tree.setModel(self._model)
@@ -114,8 +113,7 @@ class MainWindow(QMainWindow):
         toolbar.addAction(reveal)
 
     def _apply_hidden_filter(self, show_hidden: bool) -> None:
-        filters = (QDir.Filter.AllDirs | QDir.Filter.Files
-                   | QDir.Filter.NoDotAndDotDot)
+        filters = QDir.Filter.AllDirs | QDir.Filter.Files | QDir.Filter.NoDotAndDotDot
         if show_hidden:
             filters |= QDir.Filter.Hidden
         self._model.setFilter(filters)
@@ -128,7 +126,7 @@ class MainWindow(QMainWindow):
         view_menu = self.menuBar().addMenu(tr("View"))
         hidden = QAction(tr("Show hidden files"), self)
         hidden.setCheckable(True)
-        hidden.setChecked(self._settings.value("showHidden", False, type=bool))
+        hidden.setChecked(bool(self._settings.value("showHidden", False, type=bool)))
         hidden.toggled.connect(self._toggle_hidden)
         view_menu.addAction(hidden)
 
@@ -137,8 +135,7 @@ class MainWindow(QMainWindow):
             action = QAction(name, self)
             action.setCheckable(True)
             action.setChecked(code == i18n.language())
-            action.triggered.connect(
-                lambda _=False, c=code: self._switch_language(c))
+            action.triggered.connect(lambda _=False, c=code: self._switch_language(c))
             lang_menu.addAction(action)
 
         help_menu = self.menuBar().addMenu(tr("Help"))
@@ -159,13 +156,12 @@ class MainWindow(QMainWindow):
         self.statusBar().showMessage(trf("Root: {folder}", folder=folder), 3000)
 
     def _choose_folder(self) -> None:
-        current = self._settings.value("rootFolder", str(Path.home()))
-        folder = QFileDialog.getExistingDirectory(
-            self, tr("Choose Folder"), current)
+        current = str(self._settings.value("rootFolder", str(Path.home())))
+        folder = QFileDialog.getExistingDirectory(self, tr("Choose Folder"), current)
         if folder:
             self._set_root(Path(folder))
 
-    def _on_selection(self, selected, _deselected) -> None:
+    def _on_selection(self, selected: QItemSelection, _deselected: QItemSelection) -> None:
         indexes = selected.indexes()
         if not indexes:
             return
@@ -184,10 +180,8 @@ class MainWindow(QMainWindow):
         path = self._panel.current_path()
         if path is None:
             return
-        try:
+        with contextlib.suppress(subprocess.TimeoutExpired, OSError):
             subprocess.run(["open", "-R", str(path)], check=False, timeout=10)
-        except (subprocess.TimeoutExpired, OSError):
-            pass
 
     def _open_guide(self) -> None:
         guide_html, _ = _guide_paths()
@@ -207,7 +201,10 @@ class MainWindow(QMainWindow):
         from PySide6.QtWebEngineWidgets import QWebEngineView
 
         class GuidePage(QWebEnginePage):
-            def acceptNavigationRequest(self, url: QUrl, nav_type, is_main_frame):
+            def acceptNavigationRequest(
+                self, url: QUrl | str, nav_type: QWebEnginePage.NavigationType, is_main_frame: bool
+            ) -> bool:
+                url = QUrl(url)
                 if url.scheme() in ("http", "https"):
                     QDesktopServices.openUrl(url)
                     return False
@@ -267,11 +264,13 @@ class MainWindow(QMainWindow):
                 subprocess.Popen(
                     [sys.executable, "-m", "fileinfo"],
                     cwd=Path(__file__).resolve().parent.parent,
-                    start_new_session=True)
+                    start_new_session=True,
+                )
             except OSError as exc:
-                self.statusBar().showMessage(f'{tr("Error")}: {exc}', 5000)
+                self.statusBar().showMessage(f"{tr('Error')}: {exc}", 5000)
                 return
             from PySide6.QtWidgets import QApplication
+
             QApplication.quit()
 
     # -- dependencies -----------------------------------------------------------
@@ -281,9 +280,7 @@ class MainWindow(QMainWindow):
         if not missing:
             return
         names = ", ".join(d.name for d in missing)
-        self.statusBar().showMessage(
-            trf("Missing helper tool: {names} — see the Help menu for details",
-                names=names))
+        self.statusBar().showMessage(trf("Missing helper tool: {names} — see the Help menu for details", names=names))
         if not self._settings.value("depsWarned", False, type=bool):
             self._settings.setValue("depsWarned", True)
             DepsDialog(self).exec()
@@ -301,10 +298,10 @@ class MainWindow(QMainWindow):
             self._splitter.restoreState(splitter_state)
         else:
             self._splitter.setSizes([320, 780])
-        root = self._settings.value("rootFolder", str(Path.home()))
+        root = str(self._settings.value("rootFolder", str(Path.home())))
         self._tree.setRootIndex(self._model.index(root))
 
-    def closeEvent(self, event) -> None:
+    def closeEvent(self, event: QCloseEvent) -> None:
         self._settings.setValue("geometry", self.saveGeometry())
         self._settings.setValue("splitter", self._splitter.saveState())
         super().closeEvent(event)

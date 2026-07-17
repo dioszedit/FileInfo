@@ -50,6 +50,15 @@ Full guide: [docs/USER_GUIDE.md](docs/USER_GUIDE.md) · magyarul: [docs/FELHASZN
 
 Add one file: `fileinfo/locales/<code>.json` — copy an existing one (e.g. `de.json`), set `"_language_name"` to the language's native name and translate the values. The keys are the English source strings; a missing key simply falls back to English. The app picks the new language up automatically, no code changes needed. Optionally add a translated user guide as `docs/guide_<code>.html` (copy the structure of `guide_en.html`) — languages without one get the English guide.
 
+## Development
+
+```bash
+.venv/bin/pip install -r requirements-dev.txt
+.venv/bin/pre-commit install   # one-time: enables the git pre-commit hook
+```
+
+Every commit is then checked automatically: [ruff](https://docs.astral.sh/ruff/) (lint + format), [mypy](https://mypy-lang.org/) (type checking) and a few hygiene hooks — configured in `pyproject.toml` and `.pre-commit-config.yaml`. Run them manually any time with `pre-commit run --all-files`.
+
 ## Requirements
 
 - macOS, Python 3.10+ (developed on 3.14), PySide6 ≥ 6.10, Pillow

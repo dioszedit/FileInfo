@@ -18,12 +18,40 @@ from .base import (
 )
 
 VIDEO_EXTENSIONS = {
-    ".mp4", ".m4v", ".mkv", ".avi", ".mov", ".webm", ".ts", ".m2ts",
-    ".mts", ".mpg", ".mpeg", ".vob", ".wmv", ".flv", ".3gp", ".ogv",
+    ".mp4",
+    ".m4v",
+    ".mkv",
+    ".avi",
+    ".mov",
+    ".webm",
+    ".ts",
+    ".m2ts",
+    ".mts",
+    ".mpg",
+    ".mpeg",
+    ".vob",
+    ".wmv",
+    ".flv",
+    ".3gp",
+    ".ogv",
 }
 AUDIO_EXTENSIONS = {
-    ".mp3", ".flac", ".m4a", ".m4b", ".aac", ".ogg", ".oga", ".opus",
-    ".wav", ".aiff", ".aif", ".wma", ".ape", ".alac", ".dsf", ".amr",
+    ".mp3",
+    ".flac",
+    ".m4a",
+    ".m4b",
+    ".aac",
+    ".ogg",
+    ".oga",
+    ".opus",
+    ".wav",
+    ".aiff",
+    ".aif",
+    ".wma",
+    ".ape",
+    ".alac",
+    ".dsf",
+    ".amr",
 }
 MEDIA_EXTENSIONS = VIDEO_EXTENSIONS | AUDIO_EXTENSIONS
 
@@ -77,7 +105,7 @@ def _dispositions(stream: dict) -> str | None:
 
 
 def _video_stream_section(stream: dict, index: int, attached_pic: bool) -> Section:
-    title = tr("Cover art") if attached_pic else f'{tr("Video stream")} #{index}'
+    title = tr("Cover art") if attached_pic else f"{tr('Video stream')} #{index}"
     sec = Section(title)
     sec.add(tr("Codec"), stream.get("codec_long_name") or stream.get("codec_name"))
     sec.add(tr("Profile"), stream.get("profile"))
@@ -103,7 +131,7 @@ def _video_stream_section(stream: dict, index: int, attached_pic: bool) -> Secti
 
 
 def _audio_stream_section(stream: dict, index: int) -> Section:
-    sec = Section(f'{tr("Audio stream")} #{index}')
+    sec = Section(f"{tr('Audio stream')} #{index}")
     sec.add(tr("Codec"), stream.get("codec_long_name") or stream.get("codec_name"))
     sec.add(tr("Profile"), stream.get("profile"))
     sec.add(tr("Language"), _stream_lang(stream))
@@ -124,7 +152,7 @@ def _audio_stream_section(stream: dict, index: int) -> Section:
 
 
 def _subtitle_stream_section(stream: dict, index: int) -> Section:
-    sec = Section(f'{tr("Subtitle stream")} #{index}')
+    sec = Section(f"{tr('Subtitle stream')} #{index}")
     sec.add(tr("Format"), stream.get("codec_long_name") or stream.get("codec_name"))
     sec.add(tr("Language"), _stream_lang(stream))
     sec.add(tr("Title"), (stream.get("tags") or {}).get("title"))
@@ -150,13 +178,20 @@ def _container_section(fmt: dict) -> Section:
 def _tags_section(fmt: dict, streams: list[dict]) -> Section | None:
     """Container and stream tags collected together (audio file metadata)."""
     tags: dict[str, str] = {}
-    for source in [fmt] + streams:
+    for source in [fmt, *streams]:
         for key, value in (source.get("tags") or {}).items():
             tags.setdefault(key.lower(), str(value))
 
     # Track-specific technical tags do not belong here.
-    for noise in ("language", "handler_name", "vendor_id", "creation_time",
-                  "major_brand", "minor_version", "compatible_brands"):
+    for noise in (
+        "language",
+        "handler_name",
+        "vendor_id",
+        "creation_time",
+        "major_brand",
+        "minor_version",
+        "compatible_brands",
+    ):
         tags.pop(noise, None)
     if not tags:
         return None
@@ -171,10 +206,20 @@ def _tags_section(fmt: dict, streams: list[dict]) -> Section | None:
 
 
 def extract(path: Path) -> list[Section]:
-    output = run_tool([
-        "ffprobe", "-v", "quiet", "-print_format", "json",
-        "-show_format", "-show_streams", "-show_chapters", str(path),
-    ], timeout=30)
+    output = run_tool(
+        [
+            "ffprobe",
+            "-v",
+            "quiet",
+            "-print_format",
+            "json",
+            "-show_format",
+            "-show_streams",
+            "-show_chapters",
+            str(path),
+        ],
+        timeout=30,
+    )
 
     def _hint() -> list[Section]:
         hint = Section(tr("Media"))
@@ -219,7 +264,7 @@ def extract(path: Path) -> list[Section]:
     if chapters:
         sec = Section(tr("Chapters"))
         for i, ch in enumerate(chapters):
-            title = (ch.get("tags") or {}).get("title") or f'{tr("Chapter")} {i + 1}'
+            title = (ch.get("tags") or {}).get("title") or f"{tr('Chapter')} {i + 1}"
             start = ch.get("start_time")
             label = format_duration(float(start)) if start else "?"
             sec.add(f"{i + 1}. {title}", label)

@@ -31,11 +31,24 @@ def _video_frame(path: Path) -> QImage | None:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "frame.png"
         for seek in ("3", "0"):
-            result = run_tool([
-                "ffmpeg", "-v", "quiet", "-ss", seek, "-i", str(path),
-                "-frames:v", "1", "-vf", f"scale='min({MAX_PX},iw)':-2",
-                "-y", str(out),
-            ], timeout=30)
+            result = run_tool(
+                [
+                    "ffmpeg",
+                    "-v",
+                    "quiet",
+                    "-ss",
+                    seek,
+                    "-i",
+                    str(path),
+                    "-frames:v",
+                    "1",
+                    "-vf",
+                    f"scale='min({MAX_PX},iw)':-2",
+                    "-y",
+                    str(out),
+                ],
+                timeout=30,
+            )
             if result is not None and out.exists() and out.stat().st_size > 0:
                 image = QImage(str(out))
                 return image if not image.isNull() else None
@@ -45,10 +58,22 @@ def _video_frame(path: Path) -> QImage | None:
 def _audio_cover(path: Path) -> QImage | None:
     with tempfile.TemporaryDirectory() as tmp:
         out = Path(tmp) / "cover.png"
-        result = run_tool([
-            "ffmpeg", "-v", "quiet", "-i", str(path),
-            "-map", "0:v:0", "-frames:v", "1", "-y", str(out),
-        ], timeout=20)
+        result = run_tool(
+            [
+                "ffmpeg",
+                "-v",
+                "quiet",
+                "-i",
+                str(path),
+                "-map",
+                "0:v:0",
+                "-frames:v",
+                "1",
+                "-y",
+                str(out),
+            ],
+            timeout=20,
+        )
         if result is not None and out.exists() and out.stat().st_size > 0:
             image = QImage(str(out))
             return image if not image.isNull() else None
@@ -57,8 +82,7 @@ def _audio_cover(path: Path) -> QImage | None:
 
 def _quicklook(path: Path) -> QImage | None:
     with tempfile.TemporaryDirectory() as tmp:
-        run_tool(["qlmanage", "-t", "-s", str(MAX_PX), "-o", tmp, str(path)],
-                 timeout=15)
+        run_tool(["qlmanage", "-t", "-s", str(MAX_PX), "-o", tmp, str(path)], timeout=15)
         candidates = list(Path(tmp).glob("*.png"))
         if candidates:
             image = QImage(str(candidates[0]))

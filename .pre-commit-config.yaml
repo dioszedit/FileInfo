@@ -1,0 +1,34 @@
+# Telepítés fejlesztői gépen:
+#   pip install -r requirements-dev.txt
+#   pre-commit install
+# Ezután minden git commit előtt automatikusan lefutnak az ellenőrzések.
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.22
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  # A mypy a projekt venv-jéből fut, hogy lássa a PySide6 típusstubjait
+  # (a pre-commit izolált környezetébe fölösleges lenne letölteni a Qt-t).
+  # Először a ./.venv-et próbálja, így aktiválatlan venv mellett is működik.
+  - repo: local
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: sh -c 'if [ -x .venv/bin/mypy ]; then exec .venv/bin/mypy; else exec mypy; fi'
+        language: system
+        types: [python]
+        pass_filenames: false

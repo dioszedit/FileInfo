@@ -17,8 +17,7 @@ from PySide6.QtWidgets import (
 from .deps import check_dependencies, homebrew_available
 from .i18n import tr, trf
 
-HOMEBREW_INSTALL = ('/bin/bash -c "$(curl -fsSL '
-                    'https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"')
+HOMEBREW_INSTALL = '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
 
 
 class DepsDialog(QDialog):
@@ -29,10 +28,13 @@ class DepsDialog(QDialog):
 
         layout = QVBoxLayout(self)
 
-        intro = QLabel(tr(
-            "FileInfo relies on external tools for part of the metadata. "
-            "Anything missing can be installed with the command shown — the "
-            "app keeps working meanwhile, just shows less data."))
+        intro = QLabel(
+            tr(
+                "FileInfo relies on external tools for part of the metadata. "
+                "Anything missing can be installed with the command shown — the "
+                "app keeps working meanwhile, just shows less data."
+            )
+        )
         intro.setWordWrap(True)
         layout.addWidget(intro)
 
@@ -41,16 +43,14 @@ class DepsDialog(QDialog):
         bold = QFont()
         bold.setBold(True)
 
-        row = 0
         missing_installable = False
-        for dep in check_dependencies():
+        for row, dep in enumerate(check_dependencies()):
             ok = dep.path is not None
             status = QLabel("✅" if ok else "❌")
             name = QLabel(dep.name)
             name.setFont(bold)
             install = dep.install_cmd or tr("built-in tool")
-            desc = QLabel(dep.purpose if ok else
-                          f"{dep.purpose}\n" + trf("Install: {cmd}", cmd=install))
+            desc = QLabel(dep.purpose if ok else f"{dep.purpose}\n" + trf("Install: {cmd}", cmd=install))
             desc.setWordWrap(True)
             grid.addWidget(status, row, 0, Qt.AlignmentFlag.AlignTop)
             grid.addWidget(name, row, 1, Qt.AlignmentFlag.AlignTop)
@@ -58,21 +58,21 @@ class DepsDialog(QDialog):
             if not ok and dep.install_cmd:
                 missing_installable = True
                 copy_btn = QPushButton(tr("Copy command"))
-                copy_btn.clicked.connect(
-                    lambda _=False, cmd=dep.install_cmd: self._copy(cmd))
+                copy_btn.clicked.connect(lambda _=False, cmd=dep.install_cmd: self._copy(cmd))
                 grid.addWidget(copy_btn, row, 3, Qt.AlignmentFlag.AlignTop)
-            row += 1
         layout.addLayout(grid)
 
         if missing_installable and not homebrew_available():
             brew_label = QLabel(
-                tr("<b>The Homebrew package manager is not installed either.</b> Install it first by running this command in Terminal (details: ")
+                tr(
+                    "<b>The Homebrew package manager is not installed either.</b> Install it first by running this command in Terminal (details: "
+                )
                 + '<a href="https://brew.sh">brew.sh</a>):<br>'
-                + f"<code>{HOMEBREW_INSTALL}</code>")
+                + f"<code>{HOMEBREW_INSTALL}</code>"
+            )
             brew_label.setWordWrap(True)
             brew_label.setOpenExternalLinks(True)
-            brew_label.setTextInteractionFlags(
-                Qt.TextInteractionFlag.TextBrowserInteraction)
+            brew_label.setTextInteractionFlags(Qt.TextInteractionFlag.TextBrowserInteraction)
             layout.addWidget(brew_label)
             brew_copy = QPushButton(tr("Copy Homebrew install command"))
             brew_copy.clicked.connect(lambda: self._copy(HOMEBREW_INSTALL))

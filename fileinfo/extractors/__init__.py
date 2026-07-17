@@ -3,15 +3,20 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Protocol
 
 from ..i18n import tr
-from .base import Field, Section
 from . import fs, image, media, spotlight
+from .base import Field, Section
 
 __all__ = ["Field", "Section", "extract_all"]
 
 
-def _safe(extractor, path: Path) -> list[Section]:
+class _Extractor(Protocol):
+    def extract(self, path: Path) -> list[Section]: ...
+
+
+def _safe(extractor: _Extractor, path: Path) -> list[Section]:
     try:
         return extractor.extract(path)
     except Exception as exc:  # one broken extractor must not take down the rest

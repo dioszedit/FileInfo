@@ -10,8 +10,13 @@ from ..i18n import tr
 from .base import Section, humanize_key, run_tool
 
 # These already appear in another section, or are noise.
-_SKIP_PREFIXES = ("kMDItemFS", "kMDItemDisplayName", "kMDItemLogicalSize",
-                  "kMDItemPhysicalSize", "kMDItemDocumentIdentifier")
+_SKIP_PREFIXES = (
+    "kMDItemFS",
+    "kMDItemDisplayName",
+    "kMDItemLogicalSize",
+    "kMDItemPhysicalSize",
+    "kMDItemDocumentIdentifier",
+)
 
 
 def _format_value(value: object) -> str | None:
