@@ -51,6 +51,7 @@ alias fileinfo='/eleresi/ut/FileInfo/run.sh'
 - **Jobb klikk egy soron**: „Érték másolása" / „Sor másolása".
 - **Nyelv menü**: a felület nyelve váltható (magyar, angol, német, spanyol, francia); újraindítás után érvényesül.
 - **SHA-256 gomb (a panel alján)**: a kijelölt fájl ellenőrzőösszege háttérben számolva, bármekkora fájlra.
+- **Sötét és világos mód**: az app automatikusan a rendszer megjelenését követi (Rendszerbeállítások → Megjelenés), élőben vált; külön kapcsoló nincs.
 - **Nézet → Rejtett fájlok megjelenítése**: a fa alapból elrejti a pont-kezdetű fájlokat.
 
 ### Eszköztár

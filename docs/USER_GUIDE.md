@@ -29,6 +29,7 @@ brew install ffmpeg exiftool
 - **Right-click a row**: "Copy value" / "Copy row".
 - **Language menu**: switch the UI language (Hungarian, English, German, Spanish, French); takes effect after a restart.
 - **SHA-256 button (bottom of the panel)**: computes the selected file's checksum in the background, for any file size.
+- **Dark and light mode**: the app automatically follows the system appearance (System Settings → Appearance) and switches live; there is no separate toggle.
 - **View → Show hidden files**: the tree hides dotfiles by default, like Finder.
 
 ### Toolbar
