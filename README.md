@@ -1,4 +1,8 @@
-# FileInfo
+<p align="center">
+  <img src="fileinfo/resources/icon.png" width="128" alt="FileInfo icon">
+</p>
+
+<h1 align="center">FileInfo</h1>
 
 A file metadata viewer for macOS: detailed data for videos, music, images and any other file in a clean two-panel UI — streams and codecs, music tags with cover art, full EXIF, Spotlight metadata.
 
@@ -11,7 +15,16 @@ Speaks five languages (English, Deutsch, Español, Français, magyar): a languag
 - 📷 **Photos**: resolution, color mode, ICC profile, full EXIF (camera, lens, aperture, shutter speed, ISO) and GPS with an Apple Maps link
 - 📄 **Everything else**: file-system details plus whatever macOS Spotlight has indexed (PDFs, documents, apps…)
 - 🖼 Preview thumbnails (photo, video frame, album cover, QuickLook), live metadata filter, copy to clipboard, reveal in Finder
+- 🔒 **SHA-256 checksum** on demand — computed on a background thread in chunks, so even huge files hash without memory pressure; one click copies the result
 - 🌗 Follows the system light/dark appearance
+
+## Screenshots
+
+| Video: streams, codecs, languages | Music: tags, cover art, SHA-256 |
+|---|---|
+| ![Video metadata](docs/screenshots/video.png) | ![Music metadata with SHA-256](docs/screenshots/music-sha256.png) |
+
+![Photo EXIF metadata](docs/screenshots/photo-exif.png)
 
 ## Install
 

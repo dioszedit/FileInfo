@@ -70,9 +70,14 @@ class MetadataPanel(QWidget):
         self._hash_value.setReadOnly(True)
         self._hash_value.setFont(QFont("Menlo", 11))
         self._hash_value.hide()
+        self._hash_copy = QPushButton("📋")
+        self._hash_copy.setToolTip(tr("Copy value"))
+        self._hash_copy.clicked.connect(self._copy_hash)
+        self._hash_copy.hide()
         hash_row = QHBoxLayout()
         hash_row.addWidget(self._hash_button)
         hash_row.addWidget(self._hash_value, stretch=1)
+        hash_row.addWidget(self._hash_copy)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self._thumb)
@@ -184,6 +189,7 @@ class MetadataPanel(QWidget):
     def _reset_hash_row(self, path: Path) -> None:
         self._hash_value.hide()
         self._hash_value.clear()
+        self._hash_copy.hide()
         self._hash_button.setText("🔒 " + tr("Compute SHA-256"))
         self._hash_button.setEnabled(path.is_file())
 
@@ -204,6 +210,12 @@ class MetadataPanel(QWidget):
         self._hash_value.setText(digest)
         self._hash_value.show()
         self._hash_value.setCursorPosition(0)
+        self._hash_copy.show()
+
+    def _copy_hash(self) -> None:
+        QGuiApplication.clipboard().setText(self._hash_value.text())
+        self._hash_copy.setText("✓")
+        QTimer.singleShot(1500, lambda: self._hash_copy.setText("📋"))
 
     def _on_hash_failed(self, request_id: int, message: str) -> None:
         if request_id != self._request_id:
